@@ -9,4 +9,5 @@
 </p>
 
 ## NOTE:
+- SDL 1.2 is required.
 - `font.ttf` is necessary in `./src/resources`. I recommend **Gadugi Bold** as the font.
