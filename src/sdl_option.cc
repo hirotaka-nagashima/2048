@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // Copyright (c) 2014 Hirotaka Nagashima. All rights reserved.
 //-----------------------------------------------------------------------------
 
@@ -7,12 +7,13 @@
 
 namespace SDLOption {
 
+SDL_Window *window;
 SDL_Surface *video_surface;
 SDL_Surface *image_board, *image_panels, *image_gameover;
 TTF_Font *font;
 
 void SDLInitialize() {
-  if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     fprintf(stderr, "ERROR: %s\n", SDL_GetError());
     exit(-1);
   }
@@ -21,35 +22,36 @@ void SDLInitialize() {
     SDL_Quit();
     exit(-1);
   }
-  if (SDL_SetVideoMode(400, 500, 16, SDL_HWSURFACE) == NULL) {
+  window = SDL_CreateWindow("2048", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                            400, 500, 0);
+  if (!window) {
     fprintf(stderr, "ERROR: %s\n", SDL_GetError());
     TTF_Quit();
     SDL_Quit();
     exit(-1);
   }
-  SDL_WM_SetCaption("2048", "2048");
-  video_surface = SDL_GetVideoSurface();
+  video_surface = SDL_GetWindowSurface(window);
 
   // Load images.
-  image_board = IMG_Load("resources/board.jpg");
-  image_panels = IMG_Load("resources/panels.jpg");
-  image_gameover = IMG_Load("resources/gameover.png");
+  image_board = IMG_Load("src/resources/board.jpg");
+  image_panels = IMG_Load("src/resources/panels.jpg");
+  image_gameover = IMG_Load("src/resources/gameover.png");
   if (!image_board || !image_panels || !image_gameover) {
     fprintf(stderr, "ERROR: %s\n", IMG_GetError());
-    SDL_FreeSurface(video_surface);
+    SDL_DestroyWindow(window);
     TTF_Quit();
     SDL_Quit();
     exit(-1);
   }
 
   // Load a font.
-  font = TTF_OpenFont("resources/font.ttf", 20);
+  font = TTF_OpenFont("src/resources/font.ttf", 20);
   if (!font) {
     fprintf(stderr, "ERROR: %s\n", TTF_GetError());
     SDL_FreeSurface(image_gameover);
     SDL_FreeSurface(image_panels);
     SDL_FreeSurface(image_board);
-    SDL_FreeSurface(video_surface);
+    SDL_DestroyWindow(window);
     TTF_Quit();
     SDL_Quit();
     exit(-1);
@@ -63,10 +65,14 @@ void SDLFinalize() {
   SDL_FreeSurface(image_panels);
   SDL_FreeSurface(image_board);
 
-  SDL_FreeSurface(video_surface);
+  SDL_DestroyWindow(window);
 
   TTF_Quit();
   SDL_Quit();
+}
+
+void UpdateScreen() {
+  SDL_UpdateWindowSurface(window);
 }
 
 void Sleep(int duration) {
@@ -77,7 +83,7 @@ void Sleep(int duration) {
 }
 
 void ClearScreen() {
-  SDL_FillRect(video_surface, 0, 0);
+  SDL_FillRect(video_surface, NULL, 0);
 }
 
 void DrawGraph(SDL_Surface *image, int dest_x, int dest_y,
@@ -115,11 +121,12 @@ void CheckClose() {
 }
 
 void WaitEnterKey() {
+  SDL_Event event;
   while (true) {
-    SDL_WaitEvent(NULL);
+    SDL_WaitEvent(&event);
     CheckClose();
-    Uint8 *key = SDL_GetKeyState(NULL);
-    if (key[SDLK_RETURN])
+    const Uint8 *key = SDL_GetKeyboardState(NULL);
+    if (key[SDL_SCANCODE_RETURN] || key[SDL_SCANCODE_KP_ENTER])
       break;
   }
 }

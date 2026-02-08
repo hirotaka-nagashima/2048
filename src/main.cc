@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // Copyright (c) 2014 Hirotaka Nagashima. All rights reserved.
 //-----------------------------------------------------------------------------
 // 2016/10/26: Reconstructed with C++.
@@ -24,12 +24,13 @@
 #include "game.h"
 #include "sdl_option.h"
 
-// NOTE: Comment out below to use SDL in VS2015 or later versions.
-// https://stackoverflow.com/questions/30412951/
+// NOTE: VS2015+ SDL workaround (Windows only).
+#if defined(_WIN32) || defined(_MSC_VER)
 FILE _iob[] = {*stdin, *stdout, *stderr};
 extern "C" FILE * __cdecl __iob_func() {
   return _iob;
 }
+#endif
 
 void Play(bool is_auto_mode) {
   while (true) {
@@ -41,12 +42,11 @@ void Play(bool is_auto_mode) {
 
 void Analyze() {
   static const int kNumAnalysis = 100;
-  static const char kLogFile[] = "log.csv";
+  static const char kLogFile[] = "logs/log.csv";
 
   // Clear content of the log file.
-  FILE *log;
-  fopen_s(&log, kLogFile, "w");
-  fclose(log);
+  FILE *log = fopen(kLogFile, "w");
+  if (log) fclose(log);
 
   // Play game many times.
   for (int i = 0; i < kNumAnalysis; ++i) {
@@ -55,10 +55,12 @@ void Analyze() {
     Game::Result result = game.PlayAutoForAnalysis();
 
     // Log the result.
-    fopen_s(&log, kLogFile, "a");
-    fprintf_s(log, "%d,%d,%f\n",
+    log = fopen(kLogFile, "a");
+    if (log) {
+      fprintf(log, "%d,%d,%f\n",
               result.score, result.max_panel, result.num_moves_per_sec);
-    fclose(log);
+      fclose(log);
+    }
   }
 }
 

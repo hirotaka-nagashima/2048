@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // Copyright (c) 2014 Hirotaka Nagashima. All rights reserved.
 //-----------------------------------------------------------------------------
 
@@ -12,6 +12,7 @@
 
 namespace SDLOption {
 
+extern SDL_Window *window;
 extern SDL_Surface *video_surface;
 extern SDL_Surface *image_board, *image_panels, *image_gameover;
 extern TTF_Font *font;
@@ -21,6 +22,7 @@ void SDLFinalize();
 
 void Sleep(const int duration);
 void ClearScreen();
+void UpdateScreen();
 
 // Images must be 4 per row.
 void DrawGraph(SDL_Surface *image, int dest_x, int dest_y,
