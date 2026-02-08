@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------------
-// Copyright (c) 2014 @hirodotexe. All rights reserved.
+// Copyright (c) 2014 Hirotaka Nagashima. All rights reserved.
 //-----------------------------------------------------------------------------
 
 #ifndef GAMES_2048_BOARD_H_

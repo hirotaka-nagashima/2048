@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------------
-// Copyright (c) 2014 @hirodotexe. All rights reserved.
+// Copyright (c) 2014 Hirotaka Nagashima. All rights reserved.
 //-----------------------------------------------------------------------------
 // 2016/10/26: Reconstructed with C++.
 // 2014/10/06: Added evaluation functions.
